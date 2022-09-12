@@ -6,12 +6,21 @@ async function main() {
   const connection = new web3.Connection(web3.clusterApiUrl("devnet"));
   const user = await initializeKeypair(connection);
 
+  //  token mint
   const mint = await createNewMint(
     connection,
     user,
     user.publicKey,
     user.publicKey,
     2
+  );
+
+  //   token account
+  const tokenAccount = await createTokenAccount(
+    connection,
+    user,
+    mint,
+    user.publicKey
   );
 }
 
@@ -47,3 +56,25 @@ async function createNewMint(
 
   return tokenMint;
 }
+
+// creating new Token Account
+async function createTokenAccount(
+  connection: web3.Connection,
+  payer: web3.Keypair,
+  mint: web3.PublicKey,
+  owner: web3.PublicKey
+) {
+  const tokenAccount = await token.getOrCreateAssociatedTokenAccount(
+    connection,
+    payer,
+    mint,
+    owner
+  );
+
+  console.log(
+    `Token Account: https://explorer.solana.com/address/${tokenAccount.address}?cluster=devnet`
+  );
+
+  return tokenAccount;
+}
+
