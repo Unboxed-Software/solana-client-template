@@ -45,6 +45,9 @@ async function main() {
     user,
     50
   );
+
+  //   burn user's token
+  await burnTokens(connection, user, tokenAccount.address, mint, user, 25);
 }
 
 main()
@@ -144,5 +147,28 @@ async function transferTokens(
 
   console.log(
     `Transfer Transaction: https://explorer.solana.com/tx/${transactionSignature}?cluster=devnet`
+  );
+}
+
+// burning tokens
+async function burnTokens(
+  connection: web3.Connection,
+  payer: web3.Keypair,
+  account: web3.PublicKey,
+  mint: web3.PublicKey,
+  owner: web3.Keypair,
+  amount: number
+) {
+  const transactionSignature = await token.burn(
+    connection,
+    payer,
+    account,
+    mint,
+    owner,
+    amount
+  );
+
+  console.log(
+    `Burn Transaction: https://explorer.solana.com/tx/${transactionSignature}?cluster=devnet`
   );
 }
