@@ -22,6 +22,29 @@ async function main() {
     mint,
     user.publicKey
   );
+
+  //   minting 100 tokens
+  await mintTokens(connection, user, mint, tokenAccount.address, user, 100);
+
+  //   transfering minted tokens
+  const receiver = new web3.PublicKey(
+    "4JruiECiC78BWhDhzvhLuTMeG7WBmk6iwaUJKexnGarY"
+  );
+  const receiverTokenAccount = await createTokenAccount(
+    connection,
+    user,
+    mint,
+    receiver
+  );
+
+  await transferTokens(
+    connection,
+    user,
+    tokenAccount.address,
+    receiverTokenAccount.address,
+    user,
+    50
+  );
 }
 
 main()
@@ -78,3 +101,48 @@ async function createTokenAccount(
   return tokenAccount;
 }
 
+// Minting, created token in token account
+async function mintTokens(
+  connection: web3.Connection,
+  payer: web3.Keypair,
+  mint: web3.PublicKey,
+  destination: web3.PublicKey,
+  authority: web3.Keypair,
+  amount: number
+) {
+  const transactionSignature = await token.mintTo(
+    connection,
+    payer,
+    mint,
+    destination,
+    authority,
+    amount
+  );
+
+  console.log(
+    `Mint Token Transaction: https://explorer.solana.com/tx/${transactionSignature}?cluster=devnet`
+  );
+}
+
+// transferring minted tokens
+async function transferTokens(
+  connection: web3.Connection,
+  payer: web3.Keypair,
+  source: web3.PublicKey,
+  destination: web3.PublicKey,
+  owner: web3.Keypair,
+  amount: number
+) {
+  const transactionSignature = await token.transfer(
+    connection,
+    payer,
+    source,
+    destination,
+    owner,
+    amount
+  );
+
+  console.log(
+    `Transfer Transaction: https://explorer.solana.com/tx/${transactionSignature}?cluster=devnet`
+  );
+}
